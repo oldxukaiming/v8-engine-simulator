@@ -1,0 +1,8 @@
+node_modules/
+.npm-cache/
+.chrome-profile/
+.chrome-profile2/
+.chrome-live/
+shot*.png
+live*.png
+qa-*.png

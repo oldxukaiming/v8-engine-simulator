@@ -1,0 +1,16 @@
+{
+  "name": "v8-engine-simulator",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Interactive V8 engine simulator built with Three.js",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "node scripts/dev.mjs"
+  },
+  "dependencies": {
+    "three": "0.160.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.24.0"
+  }
+}

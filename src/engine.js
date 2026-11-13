@@ -1026,7 +1026,9 @@ export class EngineModel {
         index: '01',
         side: 'right',
         title: 'CROSS-PLANE CRANKSHAFT',
+        titleKey: 'hotspot.crank.title',
         sub: '90° throws · five main bearings',
+        subKey: 'hotspot.crank.sub',
         position: () => new THREE.Vector3(0.55, 0.02, 0.25),
       },
       {
@@ -1034,7 +1036,9 @@ export class EngineModel {
         index: '02',
         side: 'left',
         title: 'INTAKE PLENUM',
+        titleKey: 'hotspot.intake.title',
         sub: 'Tuned runners · drive-by-wire throttle',
+        subKey: 'hotspot.intake.sub',
         position: () => new THREE.Vector3(-0.15, 3.18, 0.1),
       },
       {
@@ -1042,7 +1046,9 @@ export class EngineModel {
         index: '03',
         side: 'left',
         title: 'DOHC CAMSHAFTS',
+        titleKey: 'hotspot.cam.title',
         sub: 'Half-speed drive · 32 valves',
+        subKey: 'hotspot.cam.sub',
         position: () => this.worldFromBank(right, 1.85, 3.08, right.inner * 0.22).add(new THREE.Vector3(0, 0.16, 0)),
       },
       {
@@ -1050,7 +1056,9 @@ export class EngineModel {
         index: '04',
         side: 'right',
         title: 'EXHAUST HEADERS',
+        titleKey: 'hotspot.exhaust.title',
         sub: 'Equal-length primaries · 4-into-1',
+        subKey: 'hotspot.exhaust.sub',
         position: () => this.worldFromBank(left, 2.0, 1.1, left.outer * 1.45),
       },
     ];

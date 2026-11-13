@@ -17,8 +17,8 @@
   --yellow: #ffd166;
   --red: #ff453a;
   --green: #62f2b1;
-  --font: "Bahnschrift", "DIN Alternate", "Arial Narrow", "Segoe UI", sans-serif;
-  --mono: "Cascadia Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  --font: "Bahnschrift", "DIN Alternate", "Microsoft YaHei", "PingFang SC", "Noto Sans SC", "Arial Narrow", "Segoe UI", sans-serif;
+  --mono: "Cascadia Mono", "SFMono-Regular", Consolas, "Microsoft YaHei", monospace;
   --radius: 3px;
 }
 
@@ -379,6 +379,22 @@ svg {
 }
 
 #btnLabels.is-on { color: var(--cyan); border-color: rgba(85, 221, 255, 0.3); background: rgba(85, 221, 255, 0.06); }
+
+.lang-btn {
+  color: var(--text-soft);
+  border-color: rgba(85, 221, 255, 0.18);
+}
+
+.lang-btn:hover {
+  color: var(--cyan);
+  border-color: rgba(85, 221, 255, 0.4);
+  background: rgba(85, 221, 255, 0.06);
+}
+
+.lang-btn .btn-label {
+  font-family: var(--mono);
+  letter-spacing: 0.05em;
+}
 
 /* ------------------------------------------------------------------ */
 /* Specification rail                                                 */
@@ -1273,6 +1289,7 @@ svg {
   font-size: 6px;
   letter-spacing: 0.18em;
   color: var(--dim);
+  white-space: nowrap;
 }
 
 .gear-badge {
@@ -2137,6 +2154,7 @@ kbd {
   .top-actions { gap: 5px; }
   .icon-btn { height: 31px; padding: 0 8px; }
   .icon-btn .btn-label { display: none; }
+  .lang-btn .btn-label { display: inline; font-size: 8px; }
   .spec-rail { display: none; }
   .control-panel {
     display: none;
@@ -2283,5 +2301,102 @@ kbd {
   .fire-chip.is-firing::after { animation: none !important; }
   * { scroll-behavior: auto !important; }
 }
+
+/* ------------------------------------------------------------------ */
+/* Chinese typography                                                 */
+/* ------------------------------------------------------------------ */
+html[lang="zh-CN"] .brand-kicker { font-size: 8.5px; letter-spacing: 0.1em; }
+html[lang="zh-CN"] .brand-sub { font-size: 8.5px; letter-spacing: 0.08em; }
+html[lang="zh-CN"] .brand-title { font-size: 16px; letter-spacing: 0.08em; }
+html[lang="zh-CN"] .mode-btn { font-size: 10.5px; letter-spacing: 0.06em; }
+html[lang="zh-CN"] .icon-btn .btn-label { font-size: 9px; letter-spacing: 0.04em; }
+html[lang="zh-CN"] .spec-topline { font-size: 8.2px; letter-spacing: 0.08em; }
+html[lang="zh-CN"] .spec-overline { font-size: 8px; letter-spacing: 0.05em; }
+html[lang="zh-CN"] .spec-grid span { font-size: 8.2px; letter-spacing: 0.06em; }
+html[lang="zh-CN"] .spec-legend span { font-size: 7.5px; letter-spacing: 0.04em; }
+html[lang="zh-CN"] .spec-note { font-size: 8.8px; line-height: 1.9; letter-spacing: 0.02em; }
+html[lang="zh-CN"] .panel-kicker { font-size: 10px; letter-spacing: 0.08em; }
+html[lang="zh-CN"] .status-wrap { font-size: 9px; letter-spacing: 0.06em; }
+html[lang="zh-CN"] .start-copy > span { font-size: 13.5px; letter-spacing: 0.12em; }
+html[lang="zh-CN"] .start-copy small { font-size: 8.5px; letter-spacing: 0.06em; }
+html[lang="zh-CN"] .control-label { font-size: 10.5px; letter-spacing: 0.06em; }
+html[lang="zh-CN"] .range-scale { font-size: 8px; letter-spacing: 0.04em; }
+html[lang="zh-CN"] .section-label { font-size: 10px; letter-spacing: 0.05em; }
+html[lang="zh-CN"] .section-hint { font-size: 8.2px; letter-spacing: 0.04em; }
+html[lang="zh-CN"] .switch-row { font-size: 10px; letter-spacing: 0.04em; }
+html[lang="zh-CN"] .cam-btn span { font-size: 8.2px; letter-spacing: 0.04em; }
+html[lang="zh-CN"] .util-btn .btn-label { font-size: 8.2px; letter-spacing: 0.03em; }
+html[lang="zh-CN"] .panel-toggle { font-size: 9px; letter-spacing: 0.06em; }
+html[lang="zh-CN"] .rpm-caption { font-size: 8px; letter-spacing: 0.05em; }
+html[lang="zh-CN"] .gear-badge span { font-size: 7px; letter-spacing: 0.05em; }
+html[lang="zh-CN"] .metric-label { font-size: 8.5px; letter-spacing: 0.04em; }
+html[lang="zh-CN"] .cycle-title { font-size: 8.5px; letter-spacing: 0.04em; }
+html[lang="zh-CN"] .stroke-name { font-size: 9px; letter-spacing: 0.05em; }
+html[lang="zh-CN"] .cycle-labels span { font-size: 7.8px; letter-spacing: 0.02em; }
+html[lang="zh-CN"] .valve-meter label { font-size: 8px; letter-spacing: 0.03em; }
+html[lang="zh-CN"] .state-stack { font-size: 8px; letter-spacing: 0.03em; }
+html[lang="zh-CN"] .valve-note { font-size: 7.5px; letter-spacing: 0.02em; }
+html[lang="zh-CN"] .firing-head > span:first-child { font-size: 9px; letter-spacing: 0.06em; }
+html[lang="zh-CN"] .firing-foot { font-size: 8px; letter-spacing: 0.03em; }
+html[lang="zh-CN"] .firing-note { font-size: 7.5px; letter-spacing: 0.03em; }
+html[lang="zh-CN"] .toast { font-size: 10px; letter-spacing: 0.04em; }
+html[lang="zh-CN"] .hotspot-copy b { font-size: 10px; letter-spacing: 0.03em; }
+html[lang="zh-CN"] .hotspot-copy small { font-size: 8px; letter-spacing: 0.01em; }
+html[lang="zh-CN"] .hotspot-index { font-size: 7.5px; }
+html[lang="zh-CN"] .scene-caption { font-size: 8.5px; letter-spacing: 0.06em; }
+html[lang="zh-CN"] .loader-kicker { font-size: 9px; letter-spacing: 0.14em; }
+html[lang="zh-CN"] .loader p { font-size: 10.5px; letter-spacing: 0.03em; }
+html[lang="zh-CN"] .loader-meta { font-size: 7.5px; letter-spacing: 0.06em; }
+html[lang="zh-CN"] .modal-kicker { font-size: 8.5px; letter-spacing: 0.14em; }
+html[lang="zh-CN"] .modal-lede { font-size: 10.5px; letter-spacing: 0.02em; }
+html[lang="zh-CN"] .help-item h3 { font-size: 12px; letter-spacing: 0.08em; }
+html[lang="zh-CN"] .help-item p { font-size: 10.5px; line-height: 1.9; letter-spacing: 0.01em; }
+html[lang="zh-CN"] .shortcut-list { font-size: 9px; letter-spacing: 0.02em; }
+html[lang="zh-CN"] .help-cn { font-size: 10.5px; line-height: 1.9; }
+html[lang="zh-CN"] .modal-foot { font-size: 7.5px; letter-spacing: 0.04em; }
+
+html[lang="zh-CN"] .control-label,
+html[lang="zh-CN"] .section-label,
+html[lang="zh-CN"] .switch-row,
+html[lang="zh-CN"] .spec-grid span,
+html[lang="zh-CN"] .metric-label,
+html[lang="zh-CN"] .cycle-title,
+html[lang="zh-CN"] .valve-meter label,
+html[lang="zh-CN"] .firing-head > span:first-child,
+html[lang="zh-CN"] .cam-btn span,
+html[lang="zh-CN"] .util-btn .btn-label,
+html[lang="zh-CN"] .icon-btn .btn-label,
+html[lang="zh-CN"] .hotspot-copy b {
+  font-weight: 500;
+}
+
+@media (max-width: 980px) {
+  html[lang="zh-CN"] .mode-btn { font-size: 8px; }
+  html[lang="zh-CN"] .panel-kicker { font-size: 8.5px; }
+}
+
+@media (max-width: 720px) {
+  html[lang="zh-CN"] .brand-title { font-size: 12px; letter-spacing: 0.06em; }
+  html[lang="zh-CN"] .mode-btn { font-size: 8px; letter-spacing: 0.03em; }
+  html[lang="zh-CN"] .panel-kicker { font-size: 8.5px; }
+  html[lang="zh-CN"] .control-label { font-size: 9.5px; }
+  html[lang="zh-CN"] .switch-row { font-size: 9.5px; }
+  html[lang="zh-CN"] .start-copy > span { font-size: 12.5px; }
+  html[lang="zh-CN"] .metric-label { font-size: 7.5px; }
+  html[lang="zh-CN"] .cycle-title { font-size: 7.5px; }
+  html[lang="zh-CN"] .cycle-labels span { font-size: 7px; }
+  html[lang="zh-CN"] .stroke-name { font-size: 7.5px; }
+  html[lang="zh-CN"] .firing-head > span:first-child { font-size: 7.5px; }
+  html[lang="zh-CN"] .help-item p { font-size: 9.5px; }
+  html[lang="zh-CN"] .modal-lede { font-size: 10px; }
+}
+
+@media (max-width: 460px) {
+  html[lang="zh-CN"] .brand-title { font-size: 10px; }
+  html[lang="zh-CN"] .mode-btn { font-size: 7px; }
+  html[lang="zh-CN"] .metric-label { font-size: 7px; }
+  html[lang="zh-CN"] .cycle-labels span { font-size: 6.5px; }
+}
+
 
 

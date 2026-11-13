@@ -3,6 +3,11 @@ node_modules/
 .chrome-profile/
 .chrome-profile2/
 .chrome-live/
+.chrome-*/
 shot*.png
 live*.png
 qa-*.png
+zh-*.png
+i18n-*.png
+check-i18n*.py
+*-qa.mjs

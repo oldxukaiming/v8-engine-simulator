@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#05090d">
   <meta name="color-scheme" content="dark">
-  <title>V8 Engine Simulator — Cross-Plane Powertrain Lab</title>
-  <meta name="description" content="An interactive, real-time cross-plane V8 engine simulator built with Three.js. Inspect the crankshaft, valvetrain, firing order and combustion cycle.">
+  <title>V8 发动机模拟器 — 十字曲轴动力实验室</title>
+  <meta name="description" content="一个基于 Three.js 的实时交互式 90° 十字曲轴 V8 发动机模拟器，可观察曲轴、配气机构、点火顺序与完整四冲程循环。">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23060b10'/%3E%3Cpath d='M8 44 20 18h9l-8 17h11l8-17h9L31 52h-9l7-16H17L9 52H2z' fill='%23ff6b2c'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -21,68 +21,72 @@
     </div>
 
     <header class="topbar">
-      <a class="brand" href="#" aria-label="V8 Engine Simulator home">
+      <a class="brand" href="#" data-i18n-aria="aria.home" aria-label="V8 Engine Simulator home">
         <span class="brand-mark">
           <span class="brand-v">V8</span>
           <span class="brand-ring"></span>
         </span>
         <span class="brand-copy">
-          <span class="brand-kicker">POWERTRAIN LAB / 01</span>
-          <span class="brand-title">CROSS-PLANE <b>V8</b></span>
-          <span class="brand-sub">INTERACTIVE ENGINE SIMULATOR</span>
+          <span class="brand-kicker" data-i18n="brand.kicker">POWERTRAIN LAB / 01</span>
+          <span class="brand-title" data-i18n-html="brand.title">CROSS-PLANE <b>V8</b></span>
+          <span class="brand-sub" data-i18n="brand.sub">INTERACTIVE ENGINE SIMULATOR</span>
         </span>
       </a>
 
-      <nav class="mode-tabs" aria-label="Visualization mode">
+      <nav class="mode-tabs" data-i18n-aria="aria.modeNav" aria-label="Visualization mode">
         <span class="mode-tab-rail" aria-hidden="true"></span>
-        <button class="mode-btn is-active" data-mode="cutaway" type="button"><span class="mode-dot"></span>CUTAWAY</button>
-        <button class="mode-btn" data-mode="xray" type="button"><span class="mode-dot"></span>X-RAY</button>
-        <button class="mode-btn" data-mode="exploded" type="button"><span class="mode-dot"></span>EXPLODED</button>
-        <button class="mode-btn" data-mode="combustion" type="button"><span class="mode-dot"></span>COMBUSTION</button>
+        <button class="mode-btn is-active" data-mode="cutaway" type="button"><span class="mode-dot"></span><span data-i18n="mode.cutaway">CUTAWAY</span></button>
+        <button class="mode-btn" data-mode="xray" type="button"><span class="mode-dot"></span><span data-i18n="mode.xray">X-RAY</span></button>
+        <button class="mode-btn" data-mode="exploded" type="button"><span class="mode-dot"></span><span data-i18n="mode.exploded">EXPLODED</span></button>
+        <button class="mode-btn" data-mode="combustion" type="button"><span class="mode-dot"></span><span data-i18n="mode.combustion">COMBUSTION</span></button>
       </nav>
 
       <div class="top-actions">
-        <button class="icon-btn label-btn" id="btnSound" type="button" aria-pressed="false" title="Toggle procedural engine audio (M)">
+        <button class="icon-btn label-btn" id="btnSound" type="button" aria-pressed="false" data-i18n-title="title.sound" title="Toggle procedural engine audio (M)">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4zm12.2-1.2a6 6 0 0 1 0 8.4M19 5a9 9 0 0 1 0 14"/></svg>
           <span class="btn-label">SOUND OFF</span>
         </button>
-        <button class="icon-btn label-btn is-on" id="btnLabels" type="button" aria-pressed="true" title="Toggle annotations (L)">
+        <button class="icon-btn label-btn is-on" id="btnLabels" type="button" aria-pressed="true" data-i18n-title="title.labels" title="Toggle annotations (L)">
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M3 12h3m12 0h3M12 3v3m0 12v3"/></svg>
-          <span class="btn-label">LABELS</span>
+          <span class="btn-label" data-i18n="top.labels">LABELS</span>
         </button>
-        <button class="icon-btn" id="btnHelp" type="button" title="Open operating manual (H)">
+        <button class="icon-btn lang-btn" id="btnLang" type="button" title="Switch to English" aria-label="Switch to English">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9S14.5 18.3 12 21c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3Z"/></svg>
+          <span class="btn-label" id="langLabel">EN</span>
+        </button>
+        <button class="icon-btn" id="btnHelp" type="button" data-i18n-title="title.help" title="Open operating manual (H)">
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.7 9a2.4 2.4 0 1 1 3.8 2c-.9.7-1.5 1.2-1.5 2.5"/><circle cx="12" cy="17" r=".6" fill="currentColor" stroke="none"/></svg>
         </button>
       </div>
     </header>
 
-    <aside class="spec-rail" aria-label="Engine specification">
-      <div class="spec-topline"><span>ENGINE</span><span>N° 0500-V8</span></div>
+    <aside class="spec-rail" data-i18n-aria="aria.spec" aria-label="Engine specification">
+      <div class="spec-topline"><span data-i18n="spec.engine">ENGINE</span><span>N° 0500-V8</span></div>
       <div class="spec-hero">
         <span class="spec-v">V8</span>
         <span class="spec-displacement">5.0<small>L</small></span>
       </div>
-      <div class="spec-overline">CROSS-PLANE · DOHC · 32 VALVE</div>
+      <div class="spec-overline" data-i18n="spec.overline">CROSS-PLANE · DOHC · 32 VALVE</div>
       <div class="spec-grid">
-        <div><strong>90°</strong><span>V-ANGLE</span></div>
-        <div><strong>4.4<small>k</small></strong><span>PEAK TQ</span></div>
-        <div><strong>620<small>Nm</small></strong><span>TORQUE</span></div>
-        <div><strong>470<small>hp</small></strong><span>OUTPUT</span></div>
-        <div><strong>7.35<small>k</small></strong><span>REDLINE</span></div>
-        <div><strong>1-8-7</strong><span>FIRING</span></div>
+        <div><strong>90°</strong><span data-i18n="spec.vAngle">V-ANGLE</span></div>
+        <div><strong>4.4<small>k</small></strong><span data-i18n="spec.peakTq">PEAK TQ</span></div>
+        <div><strong>620<small>Nm</small></strong><span data-i18n="spec.torque">TORQUE</span></div>
+        <div><strong>470<small>hp</small></strong><span data-i18n="spec.output">OUTPUT</span></div>
+        <div><strong>7.35<small>k</small></strong><span data-i18n="spec.redline">REDLINE</span></div>
+        <div><strong>1-8-7</strong><span data-i18n="spec.firing">FIRING</span></div>
       </div>
       <div class="spec-legend">
-        <span><i class="legend-dot intake"></i>INTAKE</span>
-        <span><i class="legend-dot exhaust"></i>EXHAUST</span>
-        <span><i class="legend-dot spark"></i>IGNITION</span>
+        <span><i class="legend-dot intake"></i><span data-i18n="common.intake">INTAKE</span></span>
+        <span><i class="legend-dot exhaust"></i><span data-i18n="common.exhaust">EXHAUST</span></span>
+        <span><i class="legend-dot spark"></i><span data-i18n="common.ignition">IGNITION</span></span>
       </div>
-      <div class="spec-note">Drag to orbit. Scroll to zoom.<br>Right-drag to pan.</div>
+      <div class="spec-note"><span data-i18n="spec.note1">Drag to orbit. Scroll to zoom.</span><br><span data-i18n="spec.note2">Right-drag to pan.</span></div>
     </aside>
 
-    <aside class="control-panel" id="controlPanel" aria-label="Engine controls">
-      <button class="panel-close" id="btnPanelClose" type="button" aria-label="Close controls">×</button>
+    <aside class="control-panel" id="controlPanel" data-i18n-aria="aria.controls" aria-label="Engine controls">
+      <button class="panel-close" id="btnPanelClose" type="button" data-i18n-aria="aria.closeControls" aria-label="Close controls">×</button>
       <div class="panel-head">
-        <span class="panel-kicker">ENGINE CONTROL</span>
+        <span class="panel-kicker" data-i18n="control.title">ENGINE CONTROL</span>
         <span class="status-wrap"><i class="status-led off" id="statusLed"></i><span id="statusText">STANDBY</span></span>
       </div>
 
@@ -92,26 +96,26 @@
         </span>
         <span class="start-copy">
           <span id="startLabel">START ENGINE</span>
-          <small>IGNITION / STARTER</small>
+          <small data-i18n="start.sub">IGNITION / STARTER</small>
         </span>
         <span class="start-key">SPACE</span>
       </button>
 
       <div class="control-row">
-        <div class="control-label"><span>THROTTLE</span><output id="throttleValue">8%</output></div>
-        <input class="range" id="throttle" type="range" min="0" max="100" value="8" step="1" aria-label="Throttle">
-        <div class="range-scale"><span>CLOSED</span><span>WIDE OPEN</span></div>
+        <div class="control-label"><span data-i18n="control.throttle">THROTTLE</span><output id="throttleValue">8%</output></div>
+        <input class="range" id="throttle" type="range" min="0" max="100" value="8" step="1" data-i18n-aria="aria.throttle" aria-label="Throttle">
+        <div class="range-scale"><span data-i18n="control.throttleClosed">CLOSED</span><span data-i18n="control.throttleOpen">WIDE OPEN</span></div>
       </div>
 
       <div class="control-row">
-        <div class="control-label"><span>DYNO LOAD</span><output id="loadValue">18%</output></div>
-        <input class="range" id="load" type="range" min="0" max="100" value="18" step="1" aria-label="Dyno load">
-        <div class="range-scale"><span>NO LOAD</span><span>FULL LOAD</span></div>
+        <div class="control-label"><span data-i18n="control.load">DYNO LOAD</span><output id="loadValue">18%</output></div>
+        <input class="range" id="load" type="range" min="0" max="100" value="18" step="1" data-i18n-aria="aria.load" aria-label="Dyno load">
+        <div class="range-scale"><span data-i18n="control.loadNone">NO LOAD</span><span data-i18n="control.loadFull">FULL LOAD</span></div>
       </div>
 
       <div class="panel-section">
-        <div class="section-label"><span>MECHANICAL TIME WARP</span><span class="section-hint">VISUAL SPEED</span></div>
-        <div class="segmented" role="group" aria-label="Mechanical time warp">
+        <div class="section-label"><span data-i18n="control.timeWarp">MECHANICAL TIME WARP</span><span class="section-hint" data-i18n="control.visualSpeed">VISUAL SPEED</span></div>
+        <div class="segmented" role="group" data-i18n-aria="aria.timeWarp" aria-label="Mechanical time warp">
           <button type="button" data-time="0.2">0.20×</button>
           <button type="button" data-time="0.35" class="active">0.35×</button>
           <button type="button" data-time="0.6">0.60×</button>
@@ -120,49 +124,49 @@
       </div>
 
       <div class="switch-list">
-        <label class="switch-row"><span>INTAKE / EXHAUST FLOW</span><input id="optFlow" type="checkbox" checked><i></i></label>
-        <label class="switch-row"><span>STUDIO GRID</span><input id="optGrid" type="checkbox" checked><i></i></label>
-        <label class="switch-row"><span>AUTO ORBIT</span><input id="optAutoRotate" type="checkbox" checked><i></i></label>
+        <label class="switch-row"><span data-i18n="control.flow">INTAKE / EXHAUST FLOW</span><input id="optFlow" type="checkbox" checked><i></i></label>
+        <label class="switch-row"><span data-i18n="control.grid">STUDIO GRID</span><input id="optGrid" type="checkbox" checked><i></i></label>
+        <label class="switch-row"><span data-i18n="control.autoOrbit">AUTO ORBIT</span><input id="optAutoRotate" type="checkbox" checked><i></i></label>
       </div>
 
       <div class="panel-section camera-section">
-        <div class="section-label"><span>CAMERA</span><span class="section-hint">PRESETS</span></div>
-        <div class="camera-grid" role="group" aria-label="Camera presets">
-          <button class="cam-btn is-active" data-camera="iso" type="button" title="Three-quarter view">
+        <div class="section-label"><span data-i18n="control.camera">CAMERA</span><span class="section-hint" data-i18n="control.presets">PRESETS</span></div>
+        <div class="camera-grid" role="group" data-i18n-aria="aria.camera" aria-label="Camera presets">
+          <button class="cam-btn is-active" data-camera="iso" type="button" data-i18n-title="camera.isoTitle" title="Three-quarter view">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 7.5 4.3v9.4L12 21l-7.5-4.3V7.3L12 3Z"/><path d="m4.5 7.3 7.5 4.3 7.5-4.3M12 21v-9.4"/></svg>
-            <span>ISO</span>
+            <span data-i18n="camera.iso">ISO</span>
           </button>
-          <button class="cam-btn" data-camera="front" type="button" title="Front elevation">
+          <button class="cam-btn" data-camera="front" type="button" data-i18n-title="camera.frontTitle" title="Front elevation">
             <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="5" width="14" height="14" rx="2"/><path d="M9 9h6v6H9z"/></svg>
-            <span>FRONT</span>
+            <span data-i18n="camera.front">FRONT</span>
           </button>
-          <button class="cam-btn" data-camera="side" type="button" title="Side elevation">
+          <button class="cam-btn" data-camera="side" type="button" data-i18n-title="camera.sideTitle" title="Side elevation">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16V8l4-3h8l4 3v8l-4 3H8l-4-3Z"/><path d="M4 10h16"/></svg>
-            <span>SIDE</span>
+            <span data-i18n="camera.side">SIDE</span>
           </button>
-          <button class="cam-btn" data-camera="top" type="button" title="Top plan view">
+          <button class="cam-btn" data-camera="top" type="button" data-i18n-title="camera.topTitle" title="Top plan view">
             <svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="12" rx="9" ry="5"/><path d="M3 12h18"/></svg>
-            <span>TOP</span>
+            <span data-i18n="camera.top">TOP</span>
           </button>
         </div>
       </div>
 
       <div class="utility-row">
-        <button class="util-btn" id="btnPause" type="button" title="Pause / resume (P)">
+        <button class="util-btn" id="btnPause" type="button" data-i18n-title="title.pause" title="Pause / resume (P)">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14"/></svg>
           <span class="btn-label">PAUSE</span>
         </button>
-        <button class="util-btn" id="btnStep" type="button" title="Advance 90 degrees while paused">
+        <button class="util-btn" id="btnStep" type="button" data-i18n-title="title.step" title="Advance 90 degrees while paused">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 5 9 7-9 7V5Zm11 0v14"/></svg>
-          <span class="btn-label">STEP</span>
+          <span class="btn-label" data-i18n="control.step">STEP</span>
         </button>
-        <button class="util-btn" id="btnScreenshot" type="button" title="Export current frame">
+        <button class="util-btn" id="btnScreenshot" type="button" data-i18n-title="title.frame" title="Export current frame">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4V8Z"/><circle cx="12" cy="13" r="3.5"/></svg>
-          <span class="btn-label">FRAME</span>
+          <span class="btn-label" data-i18n="control.frame">FRAME</span>
         </button>
-        <button class="util-btn" id="btnFullscreen" type="button" title="Toggle fullscreen">
+        <button class="util-btn" id="btnFullscreen" type="button" data-i18n-title="title.full" title="Toggle fullscreen">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M3 16v5h5M21 16v5h-5"/></svg>
-          <span class="btn-label">FULL</span>
+          <span class="btn-label" data-i18n="control.full">FULL</span>
         </button>
       </div>
     </aside>
@@ -176,12 +180,12 @@
 
     <div class="scene-caption">
       <span class="caption-line"></span>
-      <span>REAL-TIME MECHANICAL STUDY</span>
+      <span data-i18n="caption.study">REAL-TIME MECHANICAL STUDY</span>
       <span class="caption-sep">/</span>
       <span>THREE.JS</span>
     </div>
 
-    <section class="dashboard" aria-label="Engine telemetry">
+    <section class="dashboard" data-i18n-aria="aria.telemetry" aria-label="Engine telemetry">
       <div class="gauge-wrap">
         <svg class="rpm-gauge" viewBox="0 0 200 200" aria-hidden="true">
           <defs>
@@ -207,30 +211,30 @@
         </svg>
         <div class="rpm-readout">
           <div class="rpm-number" id="rpmValue">0000</div>
-          <div class="rpm-caption" id="rpmSub">RPM · ×1000</div>
+          <div class="rpm-caption" id="rpmSub" data-i18n="dash.rpm">RPM · ×1000</div>
         </div>
-        <div class="gear-badge"><b>D</b><span>DYNO</span></div>
+        <div class="gear-badge"><b>D</b><span data-i18n="dash.dyno">DYNO</span></div>
       </div>
 
       <div class="dash-main">
         <div class="metrics-row">
           <div class="metric">
-            <span class="metric-label">POWER</span>
+            <span class="metric-label" data-i18n="dash.power">POWER</span>
             <div class="metric-value"><strong id="hpValue">0</strong><em>HP</em></div>
             <div class="metric-spark"></div>
           </div>
           <div class="metric">
-            <span class="metric-label">TORQUE</span>
+            <span class="metric-label" data-i18n="dash.torque">TORQUE</span>
             <div class="metric-value"><strong id="torqueValue">0</strong><em>Nm</em></div>
             <div class="metric-spark"></div>
           </div>
           <div class="metric">
-            <span class="metric-label">OIL TEMP</span>
+            <span class="metric-label" data-i18n="dash.oilTemp">OIL TEMP</span>
             <div class="metric-value"><strong id="tempValue">24°</strong><em>C</em></div>
             <div class="metric-spark"></div>
           </div>
           <div class="metric">
-            <span class="metric-label">FUEL FLOW</span>
+            <span class="metric-label" data-i18n="dash.fuelFlow">FUEL FLOW</span>
             <div class="metric-value"><strong id="fuelValue">0.0</strong><em>L/H</em></div>
             <div class="metric-spark"></div>
           </div>
@@ -238,7 +242,7 @@
 
         <div class="cycle-block">
           <div class="cycle-head">
-            <span class="cycle-title">CYLINDER <b id="focusCylinder">CYL 01</b> CYCLE</span>
+            <span class="cycle-title"><span data-i18n="dash.cyclePrefix">CYLINDER</span> <b id="focusCylinder">01</b> <span data-i18n="dash.cycleSuffix">CYCLE</span></span>
             <span id="strokeName" class="stroke-name intake">INTAKE</span>
             <span class="cycle-deg" id="cycleDeg">000°</span>
           </div>
@@ -250,20 +254,20 @@
             <div class="cycle-fill" id="cycleFill"></div>
             <div class="cycle-marker" id="cycleMarker"><i></i></div>
           </div>
-          <div class="cycle-labels"><span>INTAKE</span><span>COMPRESSION</span><span>POWER</span><span>EXHAUST</span></div>
+          <div class="cycle-labels"><span data-i18n="stroke.intake">INTAKE</span><span data-i18n="stroke.compression">COMPRESSION</span><span data-i18n="stroke.power">POWER</span><span data-i18n="stroke.exhaust">EXHAUST</span></div>
         </div>
 
         <div class="valve-row">
           <div class="valve-meter">
-            <label>INTAKE <span id="intakeVal">0%</span></label>
+            <label><span data-i18n="common.intake">INTAKE</span> <span id="intakeVal">0%</span></label>
             <div class="valve-bar"><i class="intake" id="intakeBar"></i></div>
           </div>
           <div class="valve-meter">
-            <label>EXHAUST <span id="exhaustVal">0%</span></label>
+            <label><span data-i18n="common.exhaust">EXHAUST</span> <span id="exhaustVal">0%</span></label>
             <div class="valve-bar"><i class="exhaust" id="exhaustBar"></i></div>
           </div>
           <div class="state-stack">
-            <span>IGNITION <b id="ignitionState" class="state-value">OFF</b></span>
+            <span><span data-i18n="dash.ignition">IGNITION</span> <b id="ignitionState" class="state-value">OFF</b></span>
             <span id="focusValveNote" class="valve-note">VALVES CLOSED</span>
           </div>
         </div>
@@ -271,15 +275,15 @@
 
       <div class="firing-panel">
         <div class="firing-head">
-          <span>FIRING ORDER</span>
+          <span data-i18n="dash.firingOrder">FIRING ORDER</span>
           <span class="firing-sequence">1–8–7–2–6–5–4–3</span>
         </div>
         <div class="firing-order" id="firingOrder"></div>
         <div class="firing-foot">
-          <span>LOAD <b id="loadState">18%</b></span>
-          <span>SPARK <b id="sparkState" class="state-value">ARMED</b></span>
+          <span><span data-i18n="dash.load">LOAD</span> <b id="loadState">18%</b></span>
+          <span><span data-i18n="dash.spark">SPARK</span> <b id="sparkState" class="state-value">ARMED</b></span>
         </div>
-        <div class="firing-note">720° CYCLE / 8 POWER PULSES</div>
+        <div class="firing-note" data-i18n="dash.firingNote">720° CYCLE / 8 POWER PULSES</div>
       </div>
     </section>
 
@@ -292,38 +296,38 @@
           <span class="loader-v">V8</span>
           <span class="loader-stroke"></span>
         </div>
-        <div class="loader-kicker">POWERTRAIN SIMULATION SUITE</div>
-        <h1>CROSS-PLANE<br><span>V8 ENGINE</span></h1>
-        <p>Assembling crankshaft, valvetrain and combustion model.</p>
+        <div class="loader-kicker" data-i18n="loader.kicker">POWERTRAIN SIMULATION SUITE</div>
+        <h1 data-i18n-html="loader.title">CROSS-PLANE<br><span>V8 ENGINE</span></h1>
+        <p data-i18n="loader.body">Assembling crankshaft, valvetrain and combustion model.</p>
         <div class="loader-bar"><i id="loaderFill"></i></div>
-        <div class="loader-meta"><span>INITIALIZING WEBGL</span><span>5.0L / 32V / 90°</span></div>
+        <div class="loader-meta"><span data-i18n="loader.init">INITIALIZING WEBGL</span><span>5.0L / 32V / 90°</span></div>
       </div>
     </div>
 
     <div id="helpModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
       <div class="modal-card">
-        <button class="modal-close" id="helpClose" type="button" aria-label="Close manual">×</button>
-        <div class="modal-kicker">OPERATING MANUAL / 01</div>
-        <h2 id="helpTitle">INTERACTIVE <span>V8</span></h2>
-        <p class="modal-lede">A real-time mechanical study of a 90° cross-plane V8. Every piston, connecting rod, valve and camshaft is driven by the same crank-angle model that produces the firing order.</p>
+        <button class="modal-close" id="helpClose" type="button" data-i18n-aria="aria.closeManual" aria-label="Close manual">×</button>
+        <div class="modal-kicker" data-i18n="help.kicker">OPERATING MANUAL / 01</div>
+        <h2 id="helpTitle" data-i18n-html="help.title">INTERACTIVE <span>V8</span></h2>
+        <p class="modal-lede" data-i18n="help.lede">A real-time mechanical study of a 90° cross-plane V8. Every piston, connecting rod, valve and camshaft is driven by the same crank-angle model that produces the firing order.</p>
         <div class="help-grid">
-          <div class="help-item"><span class="help-num">01</span><h3>ORBIT &amp; INSPECT</h3><p>Drag to orbit, scroll to zoom, right-drag to pan. Use the four camera presets for repeatable engineering views.</p></div>
-          <div class="help-item"><span class="help-num">02</span><h3>RUN THE ENGINE</h3><p>Press START or the space bar. Throttle changes engine speed; dyno load trims the achievable RPM. Mechanical time warp only slows the visuals.</p></div>
-          <div class="help-item"><span class="help-num">03</span><h3>READ THE CYCLE</h3><p>Click any firing-order number to focus that cylinder. The 720° strip shows its intake, compression, power and exhaust strokes.</p></div>
-          <div class="help-item"><span class="help-num">04</span><h3>CHANGE THE VIEW</h3><p>Cutaway, X-Ray, Exploded and Combustion modes progressively reveal the internal assembly and combustion events.</p></div>
+          <div class="help-item"><span class="help-num">01</span><h3 data-i18n="help.item1.title">ORBIT &amp; INSPECT</h3><p data-i18n="help.item1.body">Drag to orbit, scroll to zoom, right-drag to pan. Use the four camera presets for repeatable engineering views.</p></div>
+          <div class="help-item"><span class="help-num">02</span><h3 data-i18n="help.item2.title">RUN THE ENGINE</h3><p data-i18n="help.item2.body">Press START or the space bar. Throttle changes engine speed; dyno load trims the achievable RPM. Mechanical time warp only slows the visuals.</p></div>
+          <div class="help-item"><span class="help-num">03</span><h3 data-i18n="help.item3.title">READ THE CYCLE</h3><p data-i18n="help.item3.body">Click any firing-order number to focus that cylinder. The 720° strip shows its intake, compression, power and exhaust strokes.</p></div>
+          <div class="help-item"><span class="help-num">04</span><h3 data-i18n="help.item4.title">CHANGE THE VIEW</h3><p data-i18n="help.item4.body">Cutaway, X-Ray, Exploded and Combustion modes progressively reveal the internal assembly and combustion events.</p></div>
         </div>
         <div class="help-bottom">
           <div class="shortcut-list">
-            <span><kbd>SPACE</kbd> START / STOP</span>
-            <span><kbd>P</kbd> PAUSE</span>
-            <span><kbd>L</kbd> LABELS</span>
-            <span><kbd>M</kbd> SOUND</span>
-            <span><kbd>R</kbd> RESET VIEW</span>
-            <span><kbd>1</kbd>–<kbd>4</kbd> MODES</span>
+            <span><kbd>SPACE</kbd> <span data-i18n="help.shortcut.start">START / STOP</span></span>
+            <span><kbd>P</kbd> <span data-i18n="help.shortcut.pause">PAUSE</span></span>
+            <span><kbd>L</kbd> <span data-i18n="help.shortcut.labels">LABELS</span></span>
+            <span><kbd>M</kbd> <span data-i18n="help.shortcut.sound">SOUND</span></span>
+            <span><kbd>R</kbd> <span data-i18n="help.shortcut.reset">RESET VIEW</span></span>
+            <span><kbd>1</kbd>–<kbd>4</kbd> <span data-i18n="help.shortcut.modes">MODES</span></span>
           </div>
-          <p class="help-cn">拖动旋转 · 滚轮缩放 · 右键平移。点击点火顺序中的数字可切换观察气缸；时间缩放只影响机械视觉，不影响真实转速读数。</p>
+          <p class="help-cn" data-i18n="help.note">拖动旋转 · 滚轮缩放 · 右键平移。点击点火顺序中的数字可切换观察气缸；时间缩放只影响机械视觉，不影响真实转速读数。</p>
         </div>
-        <div class="modal-foot"><span>THREE.JS / WEBGL 2</span><span>5.0L CROSS-PLANE V8 · 32 VALVE DOHC</span></div>
+        <div class="modal-foot"><span>THREE.JS / WEBGL 2</span><span data-i18n="help.footer">5.0L CROSS-PLANE V8 · 32 VALVE DOHC</span></div>
       </div>
     </div>
   </div>

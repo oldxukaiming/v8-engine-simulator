@@ -4,6 +4,7 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { EngineModel, FIRING_ORDER, REDLINE, IDLE_RPM } from './engine.js';
 import { EngineAudio } from './audio.js';
 import { UI } from './ui.js';
+import { i18n } from './i18n.js';
 import { clamp, damp, mod, makeRadialTexture, easeInOutCubic } from './utils.js';
 
 const canvas = document.getElementById('stage');
@@ -341,7 +342,7 @@ function startEngine(auto = false) {
   state.rpm = 210;
   audio.setRunning(true);
   audio.crankStarter(state.starterTimer);
-  ui.toast('STARTER ENGAGED · IGNITION ARMED', 1700);
+  ui.toast(i18n.t('toast.starter'), 1700);
 }
 
 function stopEngine() {
@@ -349,7 +350,7 @@ function stopEngine() {
   state.enginePhase = 'off';
   state.revCut = 0;
   audio.setRunning(false);
-  if (wasRunning) ui.toast('IGNITION OFF · ENGINE COASTING');
+  if (wasRunning) ui.toast(i18n.t('toast.stop'));
 }
 
 function catchEngine() {
@@ -357,7 +358,7 @@ function catchEngine() {
   state.rpm = 1120;
   state.revCutPulse = 1;
   audio.catchEngine();
-  ui.toast('IGNITION CAUGHT · V8 IDLE');
+  ui.toast(i18n.t('toast.caught'));
 }
 
 function updateSimulation(dt) {
@@ -381,7 +382,7 @@ function updateSimulation(dt) {
       } else if (state.rpm > 7335) {
         state.revCut = 0.11;
         state.revCutPulse = 0;
-        ui.toast('REV LIMITER · 7,350 RPM', 900);
+        ui.toast(i18n.t('toast.limiter'), 900);
       }
 
       const response = 2.1 + state.throttle * 4.1;
@@ -444,13 +445,17 @@ function takeScreenshot() {
   ctx.fillRect(0, 0, out.width, out.height);
   ctx.drawImage(source, 0, 0);
   const pad = Math.round(out.width * 0.018);
-  ctx.font = `600 ${Math.round(out.width * 0.012)}px Bahnschrift, "Arial Narrow", sans-serif`;
+  ctx.font = `600 ${Math.round(out.width * 0.012)}px Bahnschrift, "Microsoft YaHei", "Arial Narrow", sans-serif`;
   ctx.fillStyle = 'rgba(185,220,235,0.68)';
   ctx.textAlign = 'left';
-  ctx.fillText('V8 ENGINE SIMULATOR', pad, out.height - pad);
+  ctx.fillText(i18n.t('export.watermark'), pad, out.height - pad);
   ctx.textAlign = 'right';
   ctx.fillStyle = 'rgba(255,110,45,0.9)';
-  ctx.fillText(`${Math.round(state.rpm)} RPM  ·  ${state.mode.toUpperCase()}`, out.width - pad, out.height - pad);
+  ctx.fillText(
+    `${Math.round(state.rpm)} RPM  ·  ${i18n.t(`modeLabel.${state.mode}`)}`,
+    out.width - pad,
+    out.height - pad
+  );
   out.toBlob((blob) => {
     if (!blob) return;
     const a = document.createElement('a');
@@ -458,7 +463,7 @@ function takeScreenshot() {
     a.download = `v8-engine-${Date.now()}.png`;
     a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 2000);
-    ui.toast('FRAME EXPORTED');
+    ui.toast(i18n.t('toast.screenshot'));
   }, 'image/png');
 }
 
@@ -467,20 +472,19 @@ function bindUI() {
     onStart: () => startEngine(false),
     onThrottle: (v) => {
       state.throttle = v;
-      if (state.enginePhase === 'off' && v > 0.5) ui.toast('PRESS START TO IGNITE', 1400);
+      if (state.enginePhase === 'off' && v > 0.5) ui.toast(i18n.t('toast.pressStart'), 1400);
     },
     onLoad: (v) => {
       state.load = v;
     },
     onTimeScale: (v) => {
       state.timeScale = v;
-      ui.toast(`MECHANICAL TIME WARP · ${v.toFixed(2)}×`, 1200);
+      ui.toast(i18n.t('toast.timeWarp', { value: v.toFixed(2) }), 1200);
     },
     onMode: (mode) => {
       state.mode = mode;
       engine.setMode(mode);
-      const labels = { cutaway: 'CUTAWAY', xray: 'X-RAY', exploded: 'EXPLODED', combustion: 'COMBUSTION' };
-      ui.toast(`${labels[mode] || mode.toUpperCase()} VIEW`);
+      ui.toast(i18n.t('toast.mode', { mode: i18n.t(`modeLabel.${mode}`) }));
     },
     onSound: () => {
       state.sound = !state.sound;
@@ -507,12 +511,12 @@ function bindUI() {
       }
       state.crankAngle = mod(state.crankAngle + 90, 720);
       engine.update(0.016, state);
-      ui.toast('STEP +90° CRANKSHAFT', 900);
+      ui.toast(i18n.t('toast.step'), 900);
     },
     onScreenshot: takeScreenshot,
     onFullscreen: () => {
       if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen?.().catch(() => ui.toast('FULLSCREEN NOT AVAILABLE'));
+        document.documentElement.requestFullscreen?.().catch(() => ui.toast(i18n.t('toast.fullscreen')));
       } else {
         document.exitFullscreen?.();
       }
@@ -531,7 +535,12 @@ function bindUI() {
     },
     onFocus: (id) => {
       state.focusId = id;
-      ui.toast(`FOCUS CYLINDER ${String(id).padStart(2, '0')}`, 1000);
+      ui.toast(i18n.t('toast.focus', { n: String(id).padStart(2, '0') }), 1000);
+    },
+    onLanguage: (lang) => {
+      if (!i18n.setLanguage(lang)) return;
+      ui.applyLanguage(lang);
+      ui.toast(i18n.t(lang === 'zh' ? 'toast.langZh' : 'toast.langEn'));
     },
   });
   ui.initLabels(engine.labelAnchors);
@@ -539,6 +548,7 @@ function bindUI() {
   ui.setSound(state.sound);
   ui.setPaused(state.paused);
   ui.setAutoRotate(state.autoRotate);
+  ui.applyLanguage(i18n.lang);
 }
 
 function animate() {
@@ -635,7 +645,26 @@ function bindKeyboard() {
   });
 }
 
+function applyStaticI18n() {
+  document.querySelectorAll('[data-i18n]').forEach((el) => {
+    el.textContent = i18n.t(el.dataset.i18n);
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach((el) => {
+    el.innerHTML = i18n.t(el.dataset.i18nHtml);
+  });
+  document.querySelectorAll('[data-i18n-title]').forEach((el) => {
+    el.title = i18n.t(el.dataset.i18nTitle);
+  });
+  document.querySelectorAll('[data-i18n-aria]').forEach((el) => {
+    el.setAttribute('aria-label', i18n.t(el.dataset.i18nAria));
+  });
+  document.title = i18n.t('meta.title');
+  const description = document.querySelector('meta[name="description"]');
+  if (description) description.setAttribute('content', i18n.t('meta.description'));
+}
+
 function boot() {
+  applyStaticI18n();
   try {
     initThree();
     bindUI();

@@ -1,11 +1,12 @@
 import { FIRING_ORDER } from './engine.js';
+import { i18n } from './i18n.js';
 import { clamp, formatNumber } from './utils.js';
 
 const STROKES = [
-  { name: 'INTAKE', cls: 'intake', start: 0, end: 180 },
-  { name: 'COMPRESSION', cls: 'compression', start: 180, end: 360 },
-  { name: 'POWER', cls: 'power', start: 360, end: 540 },
-  { name: 'EXHAUST', cls: 'exhaust', start: 540, end: 720 },
+  { key: 'stroke.intake', cls: 'intake', start: 0, end: 180 },
+  { key: 'stroke.compression', cls: 'compression', start: 180, end: 360 },
+  { key: 'stroke.power', cls: 'power', start: 360, end: 540 },
+  { key: 'stroke.exhaust', cls: 'exhaust', start: 540, end: 720 },
 ];
 
 export class UI {
@@ -16,6 +17,7 @@ export class UI {
     this.labelElements = [];
     this.toastTimer = null;
     this.lastRpmText = '';
+    this.lastTelemetry = null;
 
     this._cache();
     this._buildFiringOrder();
@@ -23,6 +25,7 @@ export class UI {
     this._bind();
     this._syncRange(this.el.throttle);
     this._syncRange(this.el.load);
+    this.applyLanguage(i18n.lang);
   }
 
   _syncRange(input) {
@@ -50,6 +53,8 @@ export class UI {
       cameraButtons: [...document.querySelectorAll('[data-camera]')],
       soundBtn: this.$('btnSound'),
       labelsBtn: this.$('btnLabels'),
+      langBtn: this.$('btnLang'),
+      langLabel: this.$('langLabel'),
       helpBtn: this.$('btnHelp'),
       pauseBtn: this.$('btnPause'),
       stepBtn: this.$('btnStep'),
@@ -88,6 +93,7 @@ export class UI {
       loaderFill: this.$('loaderFill'),
       app: this.$('app'),
       panelToggle: this.$('btnPanelToggle'),
+      panelToggleLabel: this.$('btnPanelToggle')?.querySelector('span'),
       panelClose: this.$('btnPanelClose'),
       controlPanel: this.$('controlPanel'),
     };
@@ -99,7 +105,7 @@ export class UI {
       const b = document.createElement('button');
       b.className = 'fire-chip';
       b.dataset.cyl = String(id);
-      b.title = `Focus cylinder ${id}`;
+      b.title = i18n.t('chip.focus', { n: id });
       b.innerHTML = `<span class="fire-index">${String(index + 1).padStart(2, '0')}</span><b>${id}</b><i></i>`;
       b.addEventListener('click', () => this.cb.onFocus(id));
       this.el.firingOrder.appendChild(b);
@@ -169,6 +175,9 @@ export class UI {
     );
     this.el.soundBtn.addEventListener('click', () => this.cb.onSound());
     this.el.labelsBtn.addEventListener('click', () => this.cb.onLabels());
+    this.el.langBtn?.addEventListener('click', () =>
+      this.cb.onLanguage(i18n.lang === 'zh' ? 'en' : 'zh')
+    );
     this.el.helpBtn.addEventListener('click', () => this.openHelp());
     this.el.helpClose.addEventListener('click', () => this.closeHelp());
     this.el.helpModal.addEventListener('click', (e) => {
@@ -188,14 +197,17 @@ export class UI {
       const open = this.el.controlPanel.classList.toggle('is-open');
       this.el.panelToggle.classList.toggle('is-open', open);
       this.el.panelToggle.setAttribute('aria-expanded', String(open));
-      this.el.panelToggle.querySelector('span').textContent = open ? 'CLOSE' : 'CONTROLS';
+      if (this.el.panelToggleLabel) {
+        this.el.panelToggleLabel.textContent = i18n.t(open ? 'panel.close' : 'panel.controls');
+      }
     });
     this.el.panelClose?.addEventListener('click', () => {
       this.el.controlPanel.classList.remove('is-open');
       this.el.panelToggle?.classList.remove('is-open');
       this.el.panelToggle?.setAttribute('aria-expanded', 'false');
-      const label = this.el.panelToggle?.querySelector('span');
-      if (label) label.textContent = 'CONTROLS';
+      if (this.el.panelToggleLabel) {
+        this.el.panelToggleLabel.textContent = i18n.t('panel.controls');
+      }
     });
   }
 
@@ -205,17 +217,79 @@ export class UI {
       const b = document.createElement('button');
       b.className = `hotspot hotspot-${anchor.side || (i % 2 === 0 ? 'left' : 'right')}`;
       b.dataset.id = anchor.id;
+      const title = i18n.t(anchor.titleKey || `hotspot.${anchor.id}.title`);
+      const sub = i18n.t(anchor.subKey || `hotspot.${anchor.id}.sub`);
+      b.title = `${title} · ${sub}`;
       b.innerHTML = `
         <span class="hotspot-dot"></span>
         <span class="hotspot-line"></span>
         <span class="hotspot-copy">
           <span class="hotspot-index">${anchor.index}</span>
-          <b>${anchor.title}</b>
-          <small>${anchor.sub}</small>
+          <b>${title}</b>
+          <small>${sub}</small>
         </span>`;
       this.el.labelsLayer.appendChild(b);
       return { el: b, anchor };
     });
+  }
+
+  _refreshLabels() {
+    for (const item of this.labelElements) {
+      const { anchor, el } = item;
+      const title = i18n.t(anchor.titleKey || `hotspot.${anchor.id}.title`);
+      const sub = i18n.t(anchor.subKey || `hotspot.${anchor.id}.sub`);
+      const titleEl = el.querySelector('.hotspot-copy b');
+      const subEl = el.querySelector('.hotspot-copy small');
+      if (titleEl) titleEl.textContent = title;
+      if (subEl) subEl.textContent = sub;
+      el.title = `${title} · ${sub}`;
+    }
+  }
+
+  applyLanguage(lang) {
+    this.lang = i18n.messages[lang] ? lang : 'en';
+    document.querySelectorAll('[data-i18n]').forEach((el) => {
+      el.textContent = i18n.t(el.dataset.i18n);
+    });
+    document.querySelectorAll('[data-i18n-html]').forEach((el) => {
+      el.innerHTML = i18n.t(el.dataset.i18nHtml);
+    });
+    document.querySelectorAll('[data-i18n-title]').forEach((el) => {
+      el.title = i18n.t(el.dataset.i18nTitle);
+    });
+    document.querySelectorAll('[data-i18n-aria]').forEach((el) => {
+      el.setAttribute('aria-label', i18n.t(el.dataset.i18nAria));
+    });
+
+    document.documentElement.lang = i18n.lang === 'zh' ? 'zh-CN' : 'en';
+    document.documentElement.dataset.lang = i18n.lang;
+    document.title = i18n.t('meta.title');
+    const description = document.querySelector('meta[name="description"]');
+    if (description) description.setAttribute('content', i18n.t('meta.description'));
+
+    if (this.el.langLabel) this.el.langLabel.textContent = i18n.t('lang.switch');
+    if (this.el.langBtn) {
+      const label = i18n.t('lang.aria');
+      this.el.langBtn.title = label;
+      this.el.langBtn.setAttribute('aria-label', label);
+    }
+    if (this.el.soundBtn) {
+      const soundOn = this.el.soundBtn.classList.contains('is-on');
+      this.el.soundBtn.querySelector('.btn-label').textContent = i18n.t(soundOn ? 'sound.on' : 'sound.off');
+    }
+    if (this.el.pauseBtn) {
+      const paused = this.el.pauseBtn.classList.contains('is-on');
+      this.el.pauseBtn.querySelector('.btn-label').textContent = i18n.t(paused ? 'control.resume' : 'control.pause');
+    }
+    if (this.el.panelToggleLabel) {
+      const open = this.el.controlPanel?.classList.contains('is-open');
+      this.el.panelToggleLabel.textContent = i18n.t(open ? 'panel.close' : 'panel.controls');
+    }
+    for (const chip of this.fireChips) {
+      chip.title = i18n.t('chip.focus', { n: chip.dataset.cyl });
+    }
+    this._refreshLabels();
+    if (this.state && this.lastTelemetry) this.update(this.state, this.lastTelemetry);
   }
 
   projectLabels(camera, width, height, visible) {
@@ -236,6 +310,7 @@ export class UI {
 
   update(state, telemetry) {
     this.state = state;
+    this.lastTelemetry = telemetry;
     const rpm = state.rpm;
     const progress = clamp(rpm / 8000, 0, 1);
     if (this.el.rpmArc) {
@@ -259,28 +334,31 @@ export class UI {
     this.el.fuelValue.textContent = telemetry.fuel.toFixed(1);
     this.el.loadState.textContent = `${Math.round(state.load * 100)}%`;
 
-    let phase = 'STANDBY';
+    let phase = i18n.t('status.standby');
     let phaseClass = 'off';
     if (state.enginePhase === 'cranking') {
-      phase = 'CRANKING';
+      phase = i18n.t('status.cranking');
       phaseClass = 'cranking';
     } else if (state.enginePhase === 'running') {
-      phase = rpm < 1100 ? 'IDLE' : 'RUNNING';
+      phase = i18n.t(rpm < 1100 ? 'status.idle' : 'status.running');
       phaseClass = 'running';
     }
     this.el.statusText.textContent = phase;
     this.el.statusLed.className = `status-led ${phaseClass}`;
-    this.el.ignitionState.textContent = state.enginePhase === 'running' ? 'ON' : state.enginePhase === 'cranking' ? 'CRANK' : 'OFF';
+    this.el.ignitionState.textContent = i18n.t(
+      state.enginePhase === 'running' ? 'ignition.on' : state.enginePhase === 'cranking' ? 'ignition.crank' : 'ignition.off'
+    );
     this.el.ignitionState.className = `state-value ${state.enginePhase === 'running' ? 'good' : ''}`;
 
-    this.el.startLabel.textContent =
-      state.enginePhase === 'off' ? 'START ENGINE' : state.enginePhase === 'cranking' ? 'CANCEL START' : 'STOP ENGINE';
+    this.el.startLabel.textContent = i18n.t(
+      state.enginePhase === 'off' ? 'start.start' : state.enginePhase === 'cranking' ? 'start.cancel' : 'start.stop'
+    );
     this.el.startBtn.classList.toggle('is-running', state.enginePhase !== 'off');
     this.el.startBtn.classList.toggle('is-cranking', state.enginePhase === 'cranking');
     this.el.startIcon.innerHTML =
       state.enginePhase === 'off'
-        ? '<path d="M8 5v14l11-7z"/>'
-        : '<rect x="6" y="6" width="12" height="12" rx="1"/>';
+        ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>'
+        : '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="1"/></svg>';
 
     // Focused cylinder cycle.
     const cyl = telemetry.focus;
@@ -290,15 +368,21 @@ export class UI {
     this.el.cycleFill.style.width = `${pct.toFixed(3)}%`;
     this.el.cycleDeg.textContent = `${Math.round(cycle).toString().padStart(3, '0')}°`;
     const stroke = STROKES.find((s) => cycle >= s.start && cycle < s.end) || STROKES[0];
-    this.el.strokeName.textContent = stroke.name;
+    this.el.strokeName.textContent = i18n.t(stroke.key);
     this.el.strokeName.className = `stroke-name ${stroke.cls}`;
-    this.el.focusCylinder.textContent = `CYL ${String(telemetry.focusId).padStart(2, '0')}`;
-    this.el.focusValveNote.textContent = `${cyl && cyl.intakeLift > 0.04 ? 'INTAKE OPEN' : cyl && cyl.exhaustLift > 0.04 ? 'EXHAUST OPEN' : 'VALVES CLOSED'}`;
+    this.el.focusCylinder.textContent = String(telemetry.focusId).padStart(2, '0');
+    this.el.focusValveNote.textContent = i18n.t(
+      cyl && cyl.intakeLift > 0.04
+        ? 'valve.intakeOpen'
+        : cyl && cyl.exhaustLift > 0.04
+          ? 'valve.exhaustOpen'
+          : 'valve.closed'
+    );
     this.el.intakeBar.style.height = `${Math.max(2, (cyl?.intakeLift || 0) * 100)}%`;
     this.el.exhaustBar.style.height = `${Math.max(2, (cyl?.exhaustLift || 0) * 100)}%`;
     this.el.intakeVal.textContent = `${Math.round((cyl?.intakeLift || 0) * 100)}%`;
     this.el.exhaustVal.textContent = `${Math.round((cyl?.exhaustLift || 0) * 100)}%`;
-    this.el.sparkState.textContent = telemetry.spark ? 'FIRING' : 'ARMED';
+    this.el.sparkState.textContent = i18n.t(telemetry.spark ? 'spark.firing' : 'spark.armed');
     this.el.sparkState.className = `state-value ${telemetry.spark ? 'spark' : ''}`;
 
     for (const chip of this.fireChips) {
@@ -312,8 +396,8 @@ export class UI {
   setSound(enabled) {
     this.el.soundBtn.classList.toggle('is-on', enabled);
     this.el.soundBtn.setAttribute('aria-pressed', String(enabled));
-    this.el.soundBtn.querySelector('.btn-label').textContent = enabled ? 'SOUND ON' : 'SOUND OFF';
-    if (enabled) this.toast('PROCEDURAL V8 AUDIO ENABLED');
+    this.el.soundBtn.querySelector('.btn-label').textContent = i18n.t(enabled ? 'sound.on' : 'sound.off');
+    if (enabled) this.toast(i18n.t('toast.sound'));
   }
 
   setLabels(enabled) {
@@ -324,7 +408,7 @@ export class UI {
 
   setPaused(paused) {
     this.el.pauseBtn.classList.toggle('is-on', paused);
-    this.el.pauseBtn.querySelector('.btn-label').textContent = paused ? 'RESUME' : 'PAUSE';
+    this.el.pauseBtn.querySelector('.btn-label').textContent = i18n.t(paused ? 'control.resume' : 'control.pause');
     if (this.el.app) this.el.app.classList.toggle('is-paused', paused);
   }
 

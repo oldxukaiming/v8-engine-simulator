@@ -2,6 +2,8 @@
 
 一个可直接运行的高完成度 Three.js 机械可视化项目：90° 夹角、十字曲轴（cross-plane）5.0L V8，32 气门 DOHC，包含完整的 720° 四冲程循环、1-8-7-2-6-5-4-3 点火顺序、活塞—连杆—曲轴运动学、进排气门升程、双凸轮轴半速驱动、点火与燃烧发光、进排气流粒子、程序化 V8 音频，以及一整套工程仪表 HUD。
 
+**在线演示：[https://engine.xuvps.net](https://engine.xuvps.net)**
+
 ![V8 Engine Simulator](preview.png)
 
 ## 快速运行
